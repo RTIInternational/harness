@@ -1,0 +1,30 @@
+stages:
+  - build
+  - lint
+  - test
+  - cleanup
+
+build:
+  tags: [harness-runner]
+  stage: build
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN cds-mallard-web.rti.org
+    - docker build . -t harness-ci-test --no-cache
+
+lint:
+  tags: [harness-runner]
+  stage: lint
+  script:
+    - docker run --rm harness-ci-test /bin/sh -c "yarn run lint"
+
+test:
+  tags: [harness-runner]
+  stage: test
+  script:
+    - docker run --rm harness-ci-test /bin/sh -c "yarn run test:unit"
+
+cleanup:
+  tags: [harness-runner]
+  stage: cleanup
+  script:
+    - docker image rm -f harness-ci-test
