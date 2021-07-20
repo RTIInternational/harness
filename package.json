@@ -1,9 +1,6 @@
 {
-  "name": "@harness/harness",
-  "author": {
-    "name": "RTI CDS",
-    "email": "alexharding@rti.org"
-  },
+  "name": "@rtidatascience/harness",
+  "author": "RTI CDS <alexharding@rti.org>",
   "version": "1.16.3",
   "private": false,
   "scripts": {
@@ -63,5 +60,18 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "description": "harness is a plugin for the Vue.js framework for building dashboards. The harness plugin allows you to define pages in your app as simple Javascript classes, and uses those page definitions to programatically generate dashboards.",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RTIInternational/harness.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RTIInternational/harness/issues"
+  },
+  "homepage": "https://github.com/RTIInternational/harness#readme"
 }
