@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // eslint-disable-next-line
 const pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);
 
@@ -30,7 +31,7 @@ function validateAttributes (page, base) {
   // check that attributes exist
   for (const attribute of attributes) {
     if (!page[attribute]) {
-      throw String(String(base + 'class is missing attribute ' + attribute))
+      console.warn(String(base + 'class is missing attribute ' + attribute))
     }
   }
 }
@@ -41,29 +42,29 @@ function validateFilters (page, base) {
   for (const filterKey in filters) {
     // check that filters do not contain special characters in keys
     if (pattern.test(filterKey)) {
-      throw String(base + 'filter key ' + filterKey + ' contains special characters.')
+      console.warn(base + 'filter key ' + filterKey + ' contains special characters.')
     }
     // check that filters have labels and options
     if (!filters[filterKey].label) {
-      throw String(base + 'filter ' + filterKey + ' is missing label')
+      console.warn(base + 'filter ' + filterKey + ' is missing label')
     }
     if (!filters[filterKey].component) {
-      throw String(base + 'filter ' + filterKey + ' is missing component')
+      console.warn(base + 'filter ' + filterKey + ' is missing component')
     }
     // check that all options have unique keys and no special characters
     let optionKeys = []
     for (const option of filters[filterKey].options) {
       // if(pattern.test(option.key)){
-      //     throw String(base + 'filter ' + filterKey + ' option ' + option.key + ' contains special characters')
+      //     console.warn(base + 'filter ' + filterKey + ' option ' + option.key + ' contains special characters')
       // }
       if (optionKeys.includes(option.key)) {
-        throw String(base + 'filter ' + filterKey + ' option ' + option.key + ' is not unique')
+        console.warn(base + 'filter ' + filterKey + ' option ' + option.key + ' is not unique')
       }
 
       optionKeys.push(option.key)
     }
     if (filterKey in filterKeys) {
-      throw String(base + 'filter ' + filterKey + ' is not unique')
+      console.warn(base + 'filter ' + filterKey + ' is not unique')
     }
     filterKeys.push(filterKey)
   }
@@ -73,17 +74,17 @@ function validateCharts (charts, base) {
   let chartKeys = []
   for (const chartKey in charts) {
     if (pattern.test(chartKey)) {
-      throw String(base + 'chart ' + chartKey + ' contains special characters')
+      console.warn(base + 'chart ' + chartKey + ' contains special characters')
     }
     if (chartKey in chartKeys) {
-      throw String(base + 'chart ' + chartKey + ' is not unique')
+      console.warn(base + 'chart ' + chartKey + ' is not unique')
     }
     chartKeys.push(chartKey)
     if (!charts[chartKey].component) {
-      throw String(base + 'chart ' + chartKey + ' missing component')
+      console.warn(base + 'chart ' + chartKey + ' missing component')
     }
     if (!charts[chartKey].props) {
-      throw String(base + 'chart ' + chartKey + ' missing component props')
+      console.warn(base + 'chart ' + chartKey + ' missing component props')
     }
   }
 }
