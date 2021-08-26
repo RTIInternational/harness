@@ -12,7 +12,6 @@ const harness = {
     // getting store modules and routes
     let validatedPages = pages(options.pages)
     let pageModules = createPageModules(validatedPages, options)
-    let pageRoutes = routes(options.store, validatedPages)
 
     // create module in state for each page and register subscriptions
     for (const pageModuleKey in pageModules) {
@@ -21,7 +20,7 @@ const harness = {
 
     // create named route for each page
     if (options.router) {
-      options.router.addRoutes(pageRoutes)
+      routes(options.store, validatedPages).forEach(route => options.router.addRoute(route))
     }
 
     // add helper functions mixin
