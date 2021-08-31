@@ -1,7 +1,12 @@
+<div align="center">
+    <img src="logos/harness.png" alt="harness logo" />
+</div>
+<div align="center">
+    <img src="logos/rti.png" alt="RTI Logo"/>
+    <img src="logos/cds.png" alt="CDS Logo"/>
+</div>
 
-![Harness Logo](logos/harness.png)
-
-Harness is a state management library for writing data-driven dashboards in Vue. 
+### Harness is a state management library for writing data-driven dashboards in Vue. 
 
 When building dashboards for the web, good state management is hard. Writing getters, actions, mutations and state for every filter and every chart in a multi-page dashboard is a time-consuming process. Developers are often forced to weigh best practices against cost of labor, and incrementally build state and relationships between charts and filters over time - a process often responsible for technical debt. Harness aims to solve that problem by giving developers a method of defining each page in their application with syntax for defining charts and filters, then generates the following:
 * A namespaced vuex module per page with:
@@ -16,5 +21,3 @@ Harness is often used in conjunction with [Harness-UI](https://ui.harnessjs.org)
 
 For more information and full documentation, [visit our documentation website](https://harnessjs.org).
 
-![CDS Logo](logos/cds.png)
-![RTI Logo](logos/rti.png)
