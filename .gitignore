@@ -20,6 +20,7 @@ yarn-error.log*
 *.sw?
 
 # built bundle
+built
 dist
 docs/docs.tar.gz
 

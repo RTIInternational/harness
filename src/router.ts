@@ -1,8 +1,12 @@
-export default function routes (store, pages) {
+import { RouteConfig } from "vue-router/types/router"
+import { Store } from "vuex"
+import { PageConstructable } from "./types/harness"
+
+export default function routes (store: Store<any>, pages: PageConstructable[]) {
   let routes = []
   for (let Page of pages) {
     let pageObject = new Page()
-    let route = {
+    let route:RouteConfig = {
       path: '/' + pageObject.key,
       name: pageObject.key,
       component: pageObject.pageComponent,
@@ -28,7 +32,7 @@ export default function routes (store, pages) {
         }
         next()
       }
-        : null
+        : undefined
     }
     routes.push(route)
   }
