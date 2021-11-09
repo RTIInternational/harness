@@ -1,15 +1,27 @@
+// @ts-nocheck
+// TYPE CHECKING IS IGNORED FOR THIS FILE WITH THE ABOVE LINE
+// Since much of this file is imported by harness-ui, it needs to be tested along with ui.
+// @ts-ignore
 import { saveAs } from 'file-saver'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, Store } from 'vuex'
+// @ts-ignore
 import getDefaultOption from './getDefaultOption'
+import { Charts, Filters } from './types/harness'
 
 export default class Hs {
-  constructor (pageKey, store) {
+  pageKey:string
+  store:Store<any>
+  getters:string[]
+  actions:string[]
+  filters:Filters
+  charts:Charts
+  _mappedGetters
+  _mappedActions
+
+  constructor (pageKey:string, store:Store<any>) {
     this.pageKey = pageKey
     this.store = store
-    this._initializeHs()
-  }
-
-  _initializeHs () {
+    
     // set initial getters, actions and computed. map filters and charts
     this.getters = ['page', 'requestCache', 'dataLoading']
     this.actions = ['INITIALIZE_DEFAULTS', 'LOAD_DATA', 'CLEAR_ DATA']
@@ -30,7 +42,7 @@ export default class Hs {
 
     // map getters to Hs class
     this._mappedGetters = Object.assign(mapGetters(this.pageKey, this.getters), mapGetters('pages', ['pages']))
-    Object.keys(this._mappedGetters).forEach(function (getter) {
+    Object.keys(this._mappedGetters).forEach(function (getter:string) {
       this[getter] = this._mappedGetters[getter]
     }.bind(this))
 
@@ -41,7 +53,7 @@ export default class Hs {
     }.bind(this))
   }
 
-  _validateData (data, idx = null) {
+  _validateData (data:string|object[], idx = null) {
     if (typeof data === 'string') {
       data = this.getChartData(data)
     }
@@ -57,21 +69,21 @@ export default class Hs {
     return data
   }
 
-  _validFilterKey (key) {
+  _validFilterKey (key:string) {
     if (!this.filters.hasOwnProperty(key)) {
       throw String(key + ' is not a valid filter')
     }
   }
 
-  _validChartKey (key) {
+  _validChartKey (key:string) {
     if (!this.charts.hasOwnProperty(key)) {
       throw String(key + ' is not a valid chart')
     }
   }
 
-  _onlyValidNumbers (data, idx = null) {
+  _onlyValidNumbers (data:any, idx = null) {
     data = this._validateData(data, idx)
-    return data.filter(d => {
+    return data.filter((d:number) => {
       const parsed = Number(d)
       return d === parsed && typeof parsed === 'number' && !isNaN(parsed) && isFinite(parsed)
     })
@@ -82,7 +94,7 @@ export default class Hs {
    * @param  {String} key a filter key
    * #
    */
-  getFilterObject (key) {
+  getFilterObject (key:string) {
     this._validFilterKey(key)
     return this.filters[key]
   }
@@ -92,7 +104,7 @@ export default class Hs {
    * @param  {String} key a filter key
    * @memberof module:Filters
    */
-  getFilter (key) {
+  getFilter (key:string) {
     this._validFilterKey(key)
     return this.store.getters[this.pageKey + '/' + key + 'Filter']
   }
@@ -103,7 +115,7 @@ export default class Hs {
    * @param  {String} key a filter key
    * @param  {any} payload a payload to set
    */
-  setFilter (key, payload) {
+  setFilter (key:string, payload:any) {
     this._validFilterKey(key)
     this.store.dispatch(
       this.pageKey + '/SET_' + key.toUpperCase() + '_FILTER',
@@ -116,7 +128,7 @@ export default class Hs {
    * @memberof module:filters
    * @param  {String} key a filter key
    */
-  getFilterMutationString (key) {
+  getFilterMutationString (key:string) {
     this._validFilterKey(key)
     return this.pageKey + '/SET_' + key.toUpperCase() + '_FILTER'
   }
@@ -126,7 +138,7 @@ export default class Hs {
    *
    * @param  {String} key a filter key
    */
-  getFilterActionString (key) {
+  getFilterActionString (key:string) {
     this._validFilterKey(key)
     return this.getFilterMutationString(key)
   }
@@ -136,7 +148,7 @@ export default class Hs {
    *
    * @param  {String} key a filter key
    */
-  getFilterProps (key) {
+  getFilterProps (key:string) {
     this._validFilterKey(key)
     return this.filters[key].props
   }
@@ -146,7 +158,7 @@ export default class Hs {
    *
    * @param  {String} key a filter key
    */
-  getLabel (key) {
+  getLabel (key:string) {
     this._validFilterKey(key)
     return this.filters[key] ? this.filters[key].label : null
   }
@@ -156,7 +168,7 @@ export default class Hs {
    *
    * @param  {String} key a filter key
    */
-  getOptionsForFilter (key) {
+  getOptionsForFilter (key:string) {
     this._validFilterKey(key)
     return this.store.getters[this.pageKey + '/' + key + 'Options']
   }
@@ -168,7 +180,7 @@ export default class Hs {
    * @param  {Array} payload a payload to set
    * @param  {Boolean} setOptionToDefault=false optional variable, if true will set the filter default
    */
-  setOptionsForFilter (key, payload, setDefaultOption = false) {
+  setOptionsForFilter (key:string, payload:any, setDefaultOption = false) {
     this._validFilterKey(key)
     this.store.dispatch(
       this.pageKey + '/SET_' + key.toUpperCase() + '_OPTIONS',
@@ -186,7 +198,7 @@ export default class Hs {
    * @param  {String} filter a filter key
    * @param  {String} key an option key for an option included in the filter
    */
-  getLabelForOptionKey (filter, key) {
+  getLabelForOptionKey (filter, key:string) {
     this._validFilterKey(filter)
     let options = this.getOptionsForFilter(filter) || []
     let option = options.filter(o => {
@@ -200,7 +212,7 @@ export default class Hs {
    *
    * @param  {String} key a filter key
    */
-  getLabelForSelectedOption (key) {
+  getLabelForSelectedOption (key:string) {
     this._validFilterKey(key)
     return this.getLabelForOptionKey(key, this.getFilter(key)) || null
   }
@@ -231,7 +243,7 @@ export default class Hs {
    * @param  {String} filter a filter key
    * @param  {Array} optionKeys an array of optionKeys
    */
-  disableOptions (filter, optionKeys) {
+  disableOptions (filter:string, optionKeys) {
     this._validFilterKey(filter)
     this.setOptionVisibility(filter, optionKeys, true)
   }
@@ -242,7 +254,7 @@ export default class Hs {
    * @param  {String} filter a filter key
    * @param  {Array} optionKeys an array of optionKeys
    */
-  enableOptions (filter, optionKeys) {
+  enableOptions (filter:string, optionKeys) {
     this._validFilterKey(filter)
     this.setOptionVisibility(filter, optionKeys, false)
   }
@@ -252,7 +264,7 @@ export default class Hs {
    *
    * @param  {String} key a filter key
    */
-  getFilterDefault (key) {
+  getFilterDefault (key:string) {
     this._validFilterKey(key)
     let filter = this.filters[key]
     let options = this.getOptionsForFilter(key)
@@ -264,7 +276,7 @@ export default class Hs {
    *
    * @param  {String} key a filter key
    */
-  getFilterDefaultLabel (key) {
+  getFilterDefaultLabel (key:string) {
     this._validFilterKey(key)
     return this.getLabelForOptionKey(this.filters[key], this.getFilterDefault(key))
   }
@@ -274,7 +286,7 @@ export default class Hs {
    *
    * @param  {String} key a filter key
    */
-  isFilterDirty (key) {
+  isFilterDirty (key:string) {
     this._validFilterKey(key)
     return JSON.stringify(this.getFilterDefault(key)) !== JSON.stringify(this.getFilter(key))
   }
@@ -305,7 +317,7 @@ export default class Hs {
    *
    * @param  {String} key a chart key
    */
-  getChartObject (key) {
+  getChartObject (key:string) {
     this._validChartKey(key)
     return this.charts[key]
   }
@@ -315,7 +327,7 @@ export default class Hs {
    *
    * @param  {String} key a chart key
    */
-  getChartData (key) {
+  getChartData (key:string) {
     this._validChartKey(key)
     return this.store.getters[this.pageKey + '/' + key + 'ChartData']
   }
@@ -325,7 +337,7 @@ export default class Hs {
    *
    * @param  {String} key a chart key
    */
-  setChartData (key, payload) {
+  setChartData (key:string, payload:any) {
     this._validChartKey(key)
     this.store.dispatch(
       this.pageKey + '/SET_' + key.toUpperCase() + '_CHART_DATA',
@@ -338,7 +350,7 @@ export default class Hs {
    *
    * @param  {String} key a chart key
    */
-  getChartDataMutationString (key) {
+  getChartDataMutationString (key:string) {
     this._validChartKey(key)
     return this.pageKey + '/SET_' + key.toUpperCase() + '_CHART_DATA'
   }
@@ -348,7 +360,7 @@ export default class Hs {
    *
    * @param  {String} key a chart key
    */
-  getChartDataActionString (key) {
+  getChartDataActionString (key:string) {
     this._validChartKey(key)
     return this.getChartDataMutationString(key)
   }
@@ -358,7 +370,7 @@ export default class Hs {
    *
    * @param  {String} key a chart key
    */
-  getChartProps (key) {
+  getChartProps (key:string) {
     this._validChartKey(key)
     return this.charts[key].props
   }
@@ -369,7 +381,7 @@ export default class Hs {
    * @param  {any} data the data to be validated. If null, it will not validate (for lifecyle)
    * @param  {} key the key for this data's chart
    */
-  validateChartData (data, key) {
+  validateChartData (data:any[], key:string) {
     this._validChartKey(key)
     if (data) {
       if (!Array.isArray(data)) {
@@ -401,7 +413,7 @@ export default class Hs {
    * @param  {String} key a chart key
    * @param  {String} returnFormat format to generate the CSV in
    */
-  generateCSV (key, returnFormat = 'string') {
+  generateCSV (key:string, returnFormat = 'string') {
     this._validChartKey(key)
     try {
       const props = this.getChartProps(key)
@@ -442,7 +454,7 @@ export default class Hs {
    *
    * @param  {String} key a chart key
    */
-  downloadCSV (key) {
+  downloadCSV (key:string) {
     this._validChartKey(key)
     try {
       let blob = this.generateCSV(key, 'blob')
@@ -480,7 +492,7 @@ export default class Hs {
    *
    * @param  {Array} payload an array of filter keys to initialize to their default value
    */
-  initializeDefaults (payload) {
+  initializeDefaults (payload:any) {
     this.store.dispatch(
       this.pageKey + '/INITIALIZE_DEFAULTS',
       payload
@@ -499,7 +511,7 @@ export default class Hs {
    *
    * @param  {Any} payload
    */
-  setRequestCache (payload) {
+  setRequestCache (payload:any) {
     this.store.dispatch(
       this.pageKey + '/SET_REQUEST_CACHE',
       payload
@@ -511,7 +523,8 @@ export default class Hs {
    * @param  {Array/String} data an array of data arrays, or a string representing a chart data key
    * @param  {} idx the key to use for either the object attribute or array column you are trying to get values for
    */
-  getValues (data, idx) {
+  getValues (data:any, idx:string|number) {
+    // TODO: is data really object[]|string? reduce() doesn't exist on String
     data = this._validateData(data)
     return data.reduce((acc, datum) => { acc.push(datum[idx]); return acc }, [])
   }
@@ -550,7 +563,7 @@ export default class Hs {
    * @param  {Array/String} data an array of data arrays, or a string representing a chart data key
    * @param  {String} allKey=null a string representing a potential value for "all". If this is variable is present in the filter, the filter is not applied
    */
-  applyFilterToColumn (filter, column, data, allKey = null) {
+  applyFilterToColumn (filter:string, column, data, allKey = null) {
     // if data is string, get chart data
     data = this._validateData(data)
     if (!this.getFilter(filter)) {
