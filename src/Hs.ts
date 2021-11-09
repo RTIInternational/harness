@@ -17,7 +17,6 @@ export default class Hs {
   charts:Charts
   _mappedGetters
   _mappedActions
-  [key: string]: any
 
   constructor (pageKey:string, store:Store<any>) {
     this.pageKey = pageKey
