@@ -382,7 +382,7 @@ export default class Hs {
    * @param  {any} data the data to be validated. If null, it will not validate (for lifecyle)
    * @param  {} key the key for this data's chart
    */
-  validateChartData (data:any, key:string) {
+  validateChartData (data:any[], key:string) {
     this._validChartKey(key)
     if (data) {
       if (!Array.isArray(data)) {
