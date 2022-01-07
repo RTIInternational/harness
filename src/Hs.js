@@ -210,16 +210,17 @@ export default class Hs {
    *
    * @param  {String} filter a filter key
    * @param  {Array} optionKeysToSet an array of optionKeys
-   * @param  {Boolean} disable whether or not to disable option visibility
+   * @param  {String} property the property
+   * @param  {Boolean} bool the boolean value to apply to the property
    */
-  setOptionVisibility (filter, optionKeysToSet, disable) {
+  setOptionPropertyToBoolean (filter, optionKeysToSet, property, bool) {
     this._validFilterKey(filter)
     let options = this.getOptionsForFilter(filter)
     for (let i = 0; i < options.length; i++) {
       if (optionKeysToSet.includes(options[i].key)) {
-        options[i].disabled = disable
-      } else if (disable) {
-        options[i].disabled = false
+        options[i][property] = bool
+      } else if (bool) {
+        options[i][property] = !bool
       }
     }
     this.setOptionsForFilter(filter, options)
@@ -233,7 +234,7 @@ export default class Hs {
    */
   disableOptions (filter, optionKeys) {
     this._validFilterKey(filter)
-    this.setOptionVisibility(filter, optionKeys, true)
+    this.setOptionPropertyToBoolean(filter, optionKeys, 'disabled', true)
   }
 
   /**
@@ -244,7 +245,29 @@ export default class Hs {
    */
   enableOptions (filter, optionKeys) {
     this._validFilterKey(filter)
-    this.setOptionVisibility(filter, optionKeys, false)
+    this.setOptionPropertyToBoolean(filter, optionKeys, 'disabled', false)
+  }
+
+  /**
+   * Set hidden property to true for given options
+   *
+   * @param  {String} filter a filter key
+   * @param  {Array} optionKeys an array of optionKeys
+   */
+  hideOptions (filter, optionKeys) {
+    this._validFilterKey(filter)
+    this.setOptionPropertyToBoolean(filter, optionKeys, 'hidden', true)
+  }
+
+  /**
+   * Set hidden property to false for given options
+   *
+   * @param  {String} filter a filter key
+   * @param  {Array} optionKeys an array of optionKeys
+   */
+  showOptions (filter, optionKeys) {
+    this._validFilterKey(filter)
+    this.setOptionPropertyToBoolean(filter, optionKeys, 'hidden', false)
   }
 
   /**

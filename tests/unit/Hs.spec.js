@@ -161,6 +161,28 @@ describe('DV Filter functions', () => {
       })
     })
   })
+  it('Can Hide Option', () => {
+    let hs = mockHs()
+    Object.keys(page.filters()).forEach(filterKey => {
+      page.filters()[filterKey].options.forEach(option => {
+        hs.hideOptions(filterKey, [option.key])
+        let options = hs.getOptionsForFilter(filterKey)
+        let hiddenOption = options.filter(opt => opt.key === option.key)[0]
+        expect(hiddenOption.hidden).toEqual(true)
+      })
+    })
+  })
+  it('Can Show Option', () => {
+    let hs = mockHs()
+    Object.keys(page.filters()).forEach(filterKey => {
+      page.filters()[filterKey].options.forEach(option => {
+        hs.showOptions(filterKey, [option.key])
+        let options = hs.getOptionsForFilter(filterKey)
+        let shownOption = options.filter(opt => opt.key === option.key)[0]
+        expect(shownOption.hidden).toEqual(false)
+      })
+    })
+  })
 
   // TODO: Test for getFilterDefault
   // TODO: Test for getFilterDefaultLabel
