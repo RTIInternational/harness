@@ -210,7 +210,7 @@ export default class Hs {
    *
    * @param  {String} filter a filter key
    * @param  {Array} optionKeysToSet an array of optionKeys
-   * @param  {String} property the property
+   * @param  {String} property the name of the property
    * @param  {Boolean} bool the boolean value to apply to the property
    */
   setOptionPropertyToBoolean (filter, optionKeysToSet, property, bool) {
