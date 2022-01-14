@@ -1,7 +1,7 @@
 {
   "name": "@rtidatascience/harness",
   "author": "RTI CDS <alexharding@rti.org>",
-  "version": "1.19.0",
+  "version": "1.18.0",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
