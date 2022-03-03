@@ -19,7 +19,7 @@ function mixin (options) {
           let hs = new Hs(this.waypoint, store)
           return hs
         } else {
-          return false
+          throw Error("No waypoint. No Harness variable to use")
         }
       }
     },
@@ -57,6 +57,8 @@ function mixin (options) {
           ...methods,
           ...hs._mappedActions
         }
+      } else {
+        throw Error("No waypoint exists for component. Make sure the component is not rendering before the route defined for it has been pushed.")
       }
       this.$options.computed = {
         ...this.$options.computed,

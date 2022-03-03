@@ -25,9 +25,6 @@ pages.forEach((Page) => { pageReference[new Page().key] = new Page() })
 // general
 describe('harness', () => {
   let wrapper = createNewWrapper()
-  it('Mounts successfully', () => {
-    expect(wrapper.isVueInstance()).toBeTruthy()
-  })
 
   it('Has vuex store', () => {
     expect(wrapper.vm.$store).toBeTruthy()
