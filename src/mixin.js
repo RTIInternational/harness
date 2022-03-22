@@ -2,9 +2,9 @@ import Hs from './Hs'
 import { mapGetters } from 'vuex'
 
 function mixin (options) {
-  let store = options.store
-  let hsProps = Object.getOwnPropertyNames(Hs.prototype).filter(key => !key.includes('_') && key !== 'constructor')
-  let methods = hsProps.reduce((acc, prop) => {
+  const store = options.store
+  const hsProps = Object.getOwnPropertyNames(Hs.prototype).filter(key => !key.includes('_') && key !== 'constructor')
+  const methods = hsProps.reduce((acc, prop) => {
     acc[prop] = function () { return this.hs[prop](...arguments) }
     return acc
   }, {})
@@ -16,10 +16,10 @@ function mixin (options) {
       },
       hs () {
         if (this.waypoint) {
-          let hs = new Hs(this.waypoint, store)
+          const hs = new Hs(this.waypoint, store)
           return hs
         } else {
-          throw Error("No waypoint. No Harness variable to use")
+          throw Error('No waypoint. No Harness variable to use')
         }
       }
     },
@@ -29,7 +29,7 @@ function mixin (options) {
       // shim in this.$store for vuex mapGetters functions
       // vuex mapGetters depends on this.$store: https://github.com/vuejs/vuex/blob/dev/src/helpers.js#L81
       this.$store = options.store
-
+      console.log('this.$route', this.$route)
       if (this.$route && this.$route.name && this.$store.state.pages.pages.includes(this.$route.name)) {
         waypoint = this.$route.name
       }
@@ -45,7 +45,7 @@ function mixin (options) {
       // if waypoint was found, instantiate DV object and map all functionality to component
       if (waypoint) {
         this.waypoint = waypoint
-        let hs = new Hs(waypoint, store)
+        const hs = new Hs(waypoint, store)
         this.$options.computed = {
           ...this.$options.computed,
           ...hs._mappedGetters,
@@ -58,7 +58,7 @@ function mixin (options) {
           ...hs._mappedActions
         }
       } else {
-        throw Error("No waypoint exists for component. Make sure the component is not rendering before the route defined for it has been pushed.")
+        throw Error('No waypoint exists for component. Make sure the component is not rendering before the route defined for it has been pushed.')
       }
       this.$options.computed = {
         ...this.$options.computed,

@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 
-import Vue from "vue";
-import { PageConstructable, PageObj, Charts } from "./types/harness";
+import { PageConstructable, PageObj, Charts } from './types/harness'
 
 // eslint-disable-next-line
 const pattern = new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/);
@@ -34,15 +33,15 @@ function validateAttributes (page:PageObj, baseErrMsg:string) {
   ]
   // check that attributes exist
   for (const attribute of attributes) {
-    if (!page.hasOwnProperty(attribute)) {
+    if (!(attribute in page)) {
       console.warn(String(baseErrMsg + 'class is missing attribute ' + attribute))
     }
   }
 }
 
 function validateFilters (page:PageObj, baseErrMsg:string) {
-  let filters = page.filters()
-  let filterKeys = []
+  const filters = page.filters()
+  const filterKeys = []
   for (const filterKey in filters) {
     // check that filters do not contain special characters in keys
     if (pattern.test(filterKey)) {
@@ -56,7 +55,7 @@ function validateFilters (page:PageObj, baseErrMsg:string) {
       console.warn(baseErrMsg + 'filter ' + filterKey + ' is missing component')
     }
     // check that all options have unique keys and no special characters
-    let optionKeys:string[] = []
+    const optionKeys:string[] = []
     for (const option of filters[filterKey].options) {
       // if(pattern.test(option.key)){
       //     console.warn(base + 'filter ' + filterKey + ' option ' + option.key + ' contains special characters')
@@ -75,7 +74,7 @@ function validateFilters (page:PageObj, baseErrMsg:string) {
 }
 
 function validateCharts (charts:Charts, baseErrMsg:string) {
-  let chartKeys = []
+  const chartKeys = []
   for (const chartKey in charts) {
     if (pattern.test(chartKey)) {
       console.warn(baseErrMsg + 'chart ' + chartKey + ' contains special characters')

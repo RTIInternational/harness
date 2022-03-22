@@ -9,7 +9,7 @@ module.exports = {
   ],
 
   transform: {
-    '^.+\\.vue$': 'vue-jest',
+    '^.+\\.vue$': '@vue/vue3-jest',
     '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$': 'jest-transform-stub',
     '^.+\\.jsx?$': 'babel-jest',
     '^.+\\.tsx?$': 'ts-jest'
@@ -28,6 +28,7 @@ module.exports = {
   ],
 
   testURL: 'http://localhost/',
+  testEnvironment: 'jsdom',
 
   watchPlugins: [
     'jest-watch-typeahead/filename',

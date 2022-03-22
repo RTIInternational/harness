@@ -22,7 +22,7 @@ export default class Hs {
   constructor (pageKey:string, store:Store<any>) {
     this.pageKey = pageKey
     this.store = store
-    
+
     // set initial getters, actions and computed. map filters and charts
     this.getters = ['page', 'requestCache', 'dataLoading']
     this.actions = ['INITIALIZE_DEFAULTS', 'LOAD_DATA', 'CLEAR_ DATA']
@@ -71,13 +71,13 @@ export default class Hs {
   }
 
   _validFilterKey (key:string) {
-    if (!this.filters.hasOwnProperty(key)) {
+    if (!(key in this.filters)) {
       throw String(key + ' is not a valid filter')
     }
   }
 
   _validChartKey (key:string) {
-    if (!this.charts.hasOwnProperty(key)) {
+    if (!(key in this.charts)) {
       throw String(key + ' is not a valid chart')
     }
   }
@@ -201,8 +201,8 @@ export default class Hs {
    */
   getLabelForOptionKey (filter, key:string) {
     this._validFilterKey(filter)
-    let options = this.getOptionsForFilter(filter) || []
-    let option = options.filter(o => {
+    const options = this.getOptionsForFilter(filter) || []
+    const option = options.filter(o => {
       return o.key === key
     })[0]
     return option ? option.label : null
@@ -227,7 +227,7 @@ export default class Hs {
    */
   setOptionVisibility (filter, optionKeysToSet, disable) {
     this._validFilterKey(filter)
-    let options = this.getOptionsForFilter(filter)
+    const options = this.getOptionsForFilter(filter)
     for (let i = 0; i < options.length; i++) {
       if (optionKeysToSet.includes(options[i].key)) {
         options[i].disabled = disable
@@ -267,8 +267,8 @@ export default class Hs {
    */
   getFilterDefault (key:string) {
     this._validFilterKey(key)
-    let filter = this.filters[key]
-    let options = this.getOptionsForFilter(key)
+    const filter = this.filters[key]
+    const options = this.getOptionsForFilter(key)
     return getDefaultOption(filter, options)
   }
 
@@ -424,11 +424,11 @@ export default class Hs {
       }
       data = this.validateChartData(data, key)
       const keys = Object.keys(data[0])
-      let header = keys
+      const header = keys
 
-      let rows = []
+      const rows = []
       data.forEach(datum => {
-        let row = []
+        const row = []
         keys.forEach(key => {
           row.push('"' + String(datum[key]) + '"')
         })
@@ -458,7 +458,7 @@ export default class Hs {
   downloadCSV (key:string) {
     this._validChartKey(key)
     try {
-      let blob = this.generateCSV(key, 'blob')
+      const blob = this.generateCSV(key, 'blob')
       saveAs(blob, (this.getChartProps(key).chartTitle || key) + '.csv')
     } catch (error) {
       throw String('There was an error downloading a CSV for this given data: ' + String(error))
@@ -552,11 +552,13 @@ export default class Hs {
       .sort((a, b) => {
         if (map) { // sort by map
           return map.indexOf(a) - map.indexOf(b)
-        } else if (typeof a === 'string' && typeof b === 'string') { // sort strings
-          return a.localeCompare(b, 'en', { sensitivity: 'base' })
         }
+        // else if (typeof a === 'string' && typeof b === 'string') { // sort strings
+        return a.localeCompare(b, 'en', { sensitivity: 'base' })
+        // }
       })
   }
+
   /**
    * Applies the value(s) of a harness filter to a column in a given set of data and returns the filtered result
    * @param  {String} filter a key representing a harness filter
@@ -574,20 +576,21 @@ export default class Hs {
     return data.filter(datum => {
       // handle 'multiple' filters where value is an array
       if (Array.isArray(this.getFilter(filter))) {
-        let match = this.getFilter(filter).includes(datum[column])
+        const match = this.getFilter(filter).includes(datum[column])
         if (allKey) {
           return this.getFilter(filter).includes(allKey) || match
         }
         return match
       }
       // handle normal filters with a single value
-      let match = this.getFilter(filter) === datum[column]
+      const match = this.getFilter(filter) === datum[column]
       if (allKey) {
         return this.getFilter(filter) === allKey || match
       }
       return match
     })
   }
+
   /**
    * Gets the minimum value from an array of data. If an index is supplied, gets the minimum for that index/attribute in the data. Only includes valid numbers in calculations.
    * @param  {Array/String} data an array of data/data arrays, or a string representing a chart data key
@@ -646,17 +649,17 @@ export default class Hs {
    */
   getGeometricMean (data, idx = null) {
     data = this._onlyValidNumbers(data, idx)
-    let changePcts = []
+    const changePcts = []
     data.forEach((datum, datumIdx) => {
       if ((datumIdx + 1) < data.length) {
-        let datum1val = parseInt(datum) || 0
-        let datum2val = parseInt(data[datumIdx + 1]) || 0
+        const datum1val = parseInt(datum) || 0
+        const datum2val = parseInt(data[datumIdx + 1]) || 0
         if (datum1val && datum2val) { // ignore zeroes
           if (datum1val === datum2val) {
             changePcts.push(1)
           } else {
-            let change = datum2val - datum1val
-            let pctChange = 1 + ((change * 100 / datum1val) / 100) // convert change percent to decimal relative to 1. ie 3% becomes 1.03, -3% becomes 0.97
+            const change = datum2val - datum1val
+            const pctChange = 1 + ((change * 100 / datum1val) / 100) // convert change percent to decimal relative to 1. ie 3% becomes 1.03, -3% becomes 0.97
             changePcts.push(pctChange)
           }
         }
@@ -675,10 +678,10 @@ export default class Hs {
    */
   getQuartiles (data, idx = null) {
     data = this._onlyValidNumbers(data, idx).sort((a, b) => a - b)
-    let intervals = [0.25, 0.5, 0.75]
-    let quartileIntervals = intervals.reduce((final, interval) => {
-      let position = data.length * interval
-      let floor = Math.floor(position)
+    const intervals = [0.25, 0.5, 0.75]
+    const quartileIntervals = intervals.reduce((final, interval) => {
+      const position = data.length * interval
+      const floor = Math.floor(position)
 
       if (floor === position) {
         final.push((data[floor - 1] + data[floor]) / 2)
@@ -688,12 +691,12 @@ export default class Hs {
       return final
     }, [])
     return {
-      'minimum': this.getMin(data),
-      'lowerQuartile': quartileIntervals[0],
-      'median': quartileIntervals[1],
-      'upperQuartile': quartileIntervals[2],
-      'maximum': this.getMax(data),
-      'IQR': quartileIntervals[2] - quartileIntervals[0]
+      minimum: this.getMin(data),
+      lowerQuartile: quartileIntervals[0],
+      median: quartileIntervals[1],
+      upperQuartile: quartileIntervals[2],
+      maximum: this.getMax(data),
+      IQR: quartileIntervals[2] - quartileIntervals[0]
     }
   }
 
@@ -713,9 +716,9 @@ export default class Hs {
     } else {
       data = this._onlyValidNumbers(data, idx).sort((a, b) => a - b)
     }
-    let quartiles = this.getQuartiles(data, idx)
-    let lowerBound = quartiles['lowerQuartile'] - (1.5 * quartiles['IQR'])
-    let upperBound = quartiles['upperQuartile'] + (1.5 * quartiles['IQR'])
+    const quartiles = this.getQuartiles(data, idx)
+    const lowerBound = quartiles.lowerQuartile - (1.5 * quartiles.IQR)
+    const upperBound = quartiles.upperQuartile + (1.5 * quartiles.IQR)
     if (idx) {
       return data.filter(datum => datum[idx] <= lowerBound || datum[idx] >= upperBound)
     } else {
@@ -739,9 +742,9 @@ export default class Hs {
     } else {
       data = this._onlyValidNumbers(data, idx).sort((a, b) => a - b)
     }
-    let quartiles = this.getQuartiles(data, idx)
-    let lowerBound = quartiles['lowerQuartile'] - (1.5 * quartiles['IQR'])
-    let upperBound = quartiles['upperQuartile'] + (1.5 * quartiles['IQR'])
+    const quartiles = this.getQuartiles(data, idx)
+    const lowerBound = quartiles.lowerQuartile - (1.5 * quartiles.IQR)
+    const upperBound = quartiles.upperQuartile + (1.5 * quartiles.IQR)
     if (idx) {
       return data.filter(datum => datum[idx] > lowerBound && datum[idx] < upperBound)
     } else {

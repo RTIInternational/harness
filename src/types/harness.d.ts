@@ -1,22 +1,13 @@
-import VueRouter from "vue-router";
-import { ActionPayload, Store } from 'vuex';
-import Vue from 'vue'
+import { Router } from 'vue-router'
+import { ActionPayload, Store } from 'vuex'
+import { Component } from 'vue';
 
-export interface HarnessOptions {
-  pages: PageConstructable[];
-  store: Store<any>;
-  router: VueRouter;
-}
-
-export interface PageConstructable {
-  new(): PageObj,
-}
 export interface FilterOption {
   key: string
 }
 export interface Filter {
   label: string,
-  component: Vue,
+  component: Component,
   options: FilterOption[],
   beforeSet: (action:ActionPayload, hs:any) => void,
   afterSet: (action:ActionPayload, hs:any) => void,
@@ -25,7 +16,7 @@ export interface Filters {
   [filterName: string]: Filter
 }
 export interface Chart {
-  component: Vue,
+  component: Component,
   props: object
   beforeSet: (action:ActionPayload, hs:any) => void,
   afterSet: (action:ActionPayload, hs:any) => void,
@@ -42,16 +33,26 @@ export type HarnessPageState = {
 } & {
   [key: string]: any
 }
+
 export interface PageObj {
   title: string,
   key: string,
   charts: () => Charts,
   filters: () => Filters,
-  pageComponent: typeof Vue,
+  pageComponent: Component,
   pageProps?: object,
-  retrieveData?: (state:HarnessPageState, pageObj:PageObj, hs:any) => Promise<any>,
+  retrieveData?: (state:object, pageObj:PageObj, hs:any) => Promise<any>,
   beforeLoadData?: (action:ActionPayload, hs:any) => void
   afterLoadData?: (action:ActionPayload, hs:any) => void
   beforeSet: Function,
   afterSet: Function
+}
+
+export interface PageConstructable {
+  new(): PageObj,
+}
+export interface HarnessOptions {
+  pages: PageConstructable[];
+  store: Store<any>;
+  router: Router;
 }

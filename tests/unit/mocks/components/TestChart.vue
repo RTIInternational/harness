@@ -1,7 +1,6 @@
 <template>
   <div id="test">
-    <div class="container">
-    </div>
+    <div class="container" />
   </div>
 </template>
 <script>

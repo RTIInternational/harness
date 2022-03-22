@@ -1,6 +1,6 @@
 export default function getDefaultOption (filter, options = []) {
   if (options.length) {
-    let defaultOption = options.filter(
+    const defaultOption = options.filter(
       option => option.default
     )
     let filterDefault = null

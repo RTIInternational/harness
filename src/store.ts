@@ -31,12 +31,13 @@ interface ClearDataArgs {
   commit: Commit,
   dispatch: Dispatch,
 }
+type HarnessPageModule = Module<HarnessPageState, any>
 type HarnessPageStateActions = {
   SET_REQUEST_CACHE: (commitObj:CommitObj, payload:object) => void
   TOGGLE_DATA_LOADING: (commitObj:CommitObj, payload:object) => void
   INITIALIZE_DEFAULTS: (this: HarnessPageModule, { dispatch }:DispatchObj, payload:ObjectOrNull) => void
   LOAD_DATA: ({ commit, dispatch, state }:LoadDataArgs) => void
-  CLEAR_DATA: ({commit, dispatch}: ClearDataArgs) => void
+  CLEAR_DATA: ({ commit, dispatch }: ClearDataArgs) => void
 } & {
   [key: string]: any
 }
@@ -55,27 +56,26 @@ interface HarnessPagesModuleState {
 }
 interface PageModules {
   userDefined: {
-    [key: string]: Module<HarnessPageState,any>
+    [key: string]: Module<HarnessPageState, any>
   },
-  harnessInternal: Module<HarnessPagesModuleState,any> | null
+  harnessInternal: Module<HarnessPagesModuleState, any> | null
 }
-type HarnessPageModule = Module<HarnessPageState,any>
 enum SubscriptionHook {
   Before = 'before',
   After = 'after',
 }
 
 export default function createPageModules (pages:PageConstructable[], options:HarnessOptions):PageModules {
-  let pageModules:PageModules = {
+  const pageModules:PageModules = {
     userDefined: {},
     harnessInternal: null
   }
-  let pageList:string[] = []
-  let pageObjects:PageObjects = {}
-  for (let Page of pages) {
-    let pageObject = new Page()
+  const pageList:string[] = []
+  const pageObjects:PageObjects = {}
+  for (const Page of pages) {
+    const pageObject = new Page()
     pageObjects[pageObject.key] = pageObject
-    let pageModule:HarnessPageModule = {
+    const pageModule:HarnessPageModule = {
       namespaced: true,
       state: getState(pageObject),
       mutations: getMutations(pageObject),
@@ -107,7 +107,7 @@ export default function createPageModules (pages:PageConstructable[], options:Ha
 
 function getState (pageObject:PageObj) {
   // create initial state with raw data
-  let state:HarnessPageState = {
+  const state:HarnessPageState = {
     page: pageObject,
     filters: pageObject.filters(),
     charts: pageObject.charts(),
@@ -116,15 +116,15 @@ function getState (pageObject:PageObj) {
   }
 
   // add filter and lookup for each possible filter
-  let filters = pageObject.filters()
-  for (let filterKey in filters) {
+  const filters = pageObject.filters()
+  for (const filterKey in filters) {
     state[filterKey + '_filter'] = getDefaultOption(filters[filterKey], filters[filterKey].options)
     state[filterKey + '_options'] = filters[filterKey].options || []
   }
 
   // add chart data container for each chart type
-  let charts = pageObject.charts()
-  for (let chartkey in charts) {
+  const charts = pageObject.charts()
+  for (const chartkey in charts) {
     state[chartkey + '_chart_data'] = null
   }
   return state
@@ -132,7 +132,7 @@ function getState (pageObject:PageObj) {
 
 function getMutations (pageObject:PageObj) {
   // set initial mutations with raw data mutation
-  let mutations:HarnessPageStateMutations = {
+  const mutations:HarnessPageStateMutations = {
     SET_REQUEST_CACHE (state:HarnessPageState, payload:object) {
       state.request_cache = payload
     },
@@ -142,12 +142,12 @@ function getMutations (pageObject:PageObj) {
   }
   // add mutation for setting each filter
   // add mutation for each filter's options
-  let filters = pageObject.filters()
-  for (let filterKey in filters) {
-    let filterMutation = function (state:HarnessPageState, payload:object) {
+  const filters = pageObject.filters()
+  for (const filterKey in filters) {
+    const filterMutation = function (state:HarnessPageState, payload:object) {
       state[filterKey + '_filter'] = payload
     }
-    let optionMutation = function (state:HarnessPageState, payload:object) {
+    const optionMutation = function (state:HarnessPageState, payload:object) {
       state[filterKey + '_options'] = payload
     }
 
@@ -156,9 +156,9 @@ function getMutations (pageObject:PageObj) {
   }
 
   // add mutation for each chart's data container
-  let charts = pageObject.charts()
-  for (let chartKey in charts) {
-    let mutation = function (state:HarnessPageState, payload:object) {
+  const charts = pageObject.charts()
+  for (const chartKey in charts) {
+    const mutation = function (state:HarnessPageState, payload:object) {
       state[chartKey + '_chart_data'] = payload
     }
     mutations['SET_' + chartKey.toUpperCase() + '_CHART_DATA'] = mutation
@@ -168,7 +168,7 @@ function getMutations (pageObject:PageObj) {
 
 function getActions (pageObject:PageObj, options:HarnessOptions) {
   // set initial action for setting raw data
-  let actions:HarnessPageStateActions = {
+  const actions:HarnessPageStateActions = {
     SET_REQUEST_CACHE ({ commit }, payload:object) {
       commit('SET_REQUEST_CACHE', payload)
     },
@@ -178,7 +178,7 @@ function getActions (pageObject:PageObj, options:HarnessOptions) {
     // create initialize defaults option that iterates over filters and sets default values
     INITIALIZE_DEFAULTS: function (this: HarnessPageModule, { dispatch }:DispatchObj, payload:ObjectOrNull = null) {
       let filters = pageObject.filters()
-  
+
       // only intialize defaults for a subset of filters if included
       if (payload) {
         filters = Object.keys(filters)
@@ -223,12 +223,12 @@ function getActions (pageObject:PageObj, options:HarnessOptions) {
   }
   // create actions for setting each filter
   // create actions for setting each filter's options
-  let filters = pageObject.filters()
-  for (let filterKey in filters) {
-    let filterAction = function ({ commit }:CommitObj, payload:object) {
+  const filters = pageObject.filters()
+  for (const filterKey in filters) {
+    const filterAction = function ({ commit }:CommitObj, payload:object) {
       commit('SET_' + filterKey.toUpperCase() + '_FILTER', payload)
     }
-    let optionAction = function ({ commit }:CommitObj, payload:object) {
+    const optionAction = function ({ commit }:CommitObj, payload:object) {
       commit('SET_' + filterKey.toUpperCase() + '_OPTIONS', payload)
     }
     actions['SET_' + filterKey.toUpperCase() + '_FILTER'] = filterAction
@@ -236,9 +236,9 @@ function getActions (pageObject:PageObj, options:HarnessOptions) {
   }
 
   // create action for setting each chart's data container
-  let charts = pageObject.charts()
-  for (let chartKey in charts) {
-    let action = function ({ commit }:CommitObj, payload:object) {
+  const charts = pageObject.charts()
+  for (const chartKey in charts) {
+    const action = function ({ commit }:CommitObj, payload:object) {
       commit('SET_' + chartKey.toUpperCase() + '_CHART_DATA', payload)
     }
     actions['SET_' + chartKey.toUpperCase() + '_CHART_DATA'] = action
@@ -249,7 +249,7 @@ function getActions (pageObject:PageObj, options:HarnessOptions) {
 
 function getGetters (pageObject:PageObj) {
   // add initial getter for raw data
-  let getters:HarnessPageStateGetters = {
+  const getters:HarnessPageStateGetters = {
     requestCache (state:HarnessPageState) {
       return state.request_cache
     },
@@ -268,12 +268,12 @@ function getGetters (pageObject:PageObj) {
   }
   // add getter for each filter
   // add getter for each filter's options
-  let filters = pageObject.filters()
-  for (let filterKey in filters) {
-    let filterGetter = function (state:HarnessPageState) {
+  const filters = pageObject.filters()
+  for (const filterKey in filters) {
+    const filterGetter = function (state:HarnessPageState) {
       return state[filterKey + '_filter']
     }
-    let optionGetter = function (state:HarnessPageState) {
+    const optionGetter = function (state:HarnessPageState) {
       return state[filterKey + '_options']
     }
     getters[filterKey + 'Filter'] = filterGetter
@@ -281,9 +281,9 @@ function getGetters (pageObject:PageObj) {
   }
 
   // add getter for each chart data container
-  let charts = pageObject.charts()
-  for (let chartKey in charts) {
-    let getter = function (state:HarnessPageState) {
+  const charts = pageObject.charts()
+  for (const chartKey in charts) {
+    const getter = function (state:HarnessPageState) {
       return state[chartKey + '_chart_data']
     }
     getters[chartKey + 'ChartData'] = getter
@@ -303,29 +303,28 @@ function registerSubscriptions (pageObjects:PageObjects, options:HarnessOptions)
 }
 
 function runSubscriptions (hook:SubscriptionHook, action:ActionPayload, options:HarnessOptions, pageObjects:PageObjects) {
-  let pageKey = action.type.split('/')[0]
+  const pageKey = action.type.split('/')[0]
   if (Object.keys(pageObjects).includes(pageKey)) {
     const hs = new Hs(pageKey, options.store)
     if (action.type.includes('LOAD_DATA')) {
       hs.toggleDataLoading()
-      if (hook == SubscriptionHook.Before && pageObjects[pageKey].beforeLoadData) {
+      if (hook === SubscriptionHook.Before && pageObjects[pageKey].beforeLoadData) {
         pageObjects[pageKey].beforeLoadData!(action, hs)
-      }
-      else if (hook == SubscriptionHook.After && pageObjects[pageKey].afterLoadData) {
+      } else if (hook === SubscriptionHook.After && pageObjects[pageKey].afterLoadData) {
         pageObjects[pageKey].afterLoadData!(action, hs)
       }
     } else {
       if (hs.filters) {
         Object.keys(hs.filters).forEach(filterKey => {
           if (
-            hook == SubscriptionHook.Before && 
+            hook === SubscriptionHook.Before &&
             action.type === hs.getFilterActionString(filterKey) &&
             hs.filters[filterKey].beforeSet
           ) {
             hs.filters[filterKey].beforeSet(action, hs)
           }
           if (
-            hook == SubscriptionHook.After && 
+            hook === SubscriptionHook.After &&
             action.type === hs.getFilterActionString(filterKey) &&
             hs.filters[filterKey].afterSet
           ) {
@@ -336,14 +335,14 @@ function runSubscriptions (hook:SubscriptionHook, action:ActionPayload, options:
       if (hs.charts) {
         Object.keys(hs.charts).forEach(chartKey => {
           if (
-            hook == SubscriptionHook.Before && 
+            hook === SubscriptionHook.Before &&
             action.type === hs.getChartDataActionString(chartKey) &&
             hs.charts[chartKey].beforeSet
           ) {
             hs.charts[chartKey].beforeSet(action, hs)
           }
           if (
-            hook == SubscriptionHook.After && 
+            hook === SubscriptionHook.After &&
             action.type === hs.getChartDataActionString(chartKey) &&
             hs.charts[chartKey].afterSet
           ) {
